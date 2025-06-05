@@ -24,8 +24,8 @@ export default function Header() {
           <NavLink to="/faq" className={navLinkClass}>
             FAQ
           </NavLink>
-          <NavLink to="/contact" className={navLinkClass}>
-            Contact
+          <NavLink to="/contacts" className={navLinkClass}>
+            Contacts
           </NavLink>
         </nav>
       </div>

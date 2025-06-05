@@ -1,7 +1,18 @@
-// app/routes/faq.tsx
+import type { MetaFunction } from "@remix-run/node"; // app/routes/faq.tsx
 import { useState } from "react";
 
-import Cover from "../components/cover";
+import Cover from "./cover";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "FAQ | Soelle Shop" },
+    {
+      name: "description",
+      content:
+        "Find answers to frequently asked questions about Soelle Shop, orders, shipping, and more.",
+    },
+  ];
+};
 
 type FAQItem = {
   question: string;

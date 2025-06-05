@@ -1,10 +1,14 @@
 type CoverProps = {
-  title: string;
+  title?: string;
   subtitle?: string;
   backgroundImage?: string;
 };
 
-export default function Cove({ title, subtitle, backgroundImage }: CoverProps) {
+export default function Cover({
+  title,
+  subtitle,
+  backgroundImage,
+}: CoverProps) {
   return (
     <section
       className="w-full min-h-[60vh] h-[60vh] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center text-center px-4"
@@ -12,8 +16,12 @@ export default function Cove({ title, subtitle, backgroundImage }: CoverProps) {
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : "",
       }}
     >
-      <h1 className="text-4xl font-bold mb-4">{title}</h1>
-      {subtitle && <p className="text-lg max-w-2xl mx-auto">{subtitle}</p>}
+      {(title || subtitle) && (
+        <div className="bg-white bg-opacity-90 text-black p-6 rounded shadow max-w-2xl">
+          {title && <h1 className="text-4xl font-bold mb-2">{title}</h1>}
+          {subtitle && <p className="text-lg">{subtitle}</p>}
+        </div>
+      )}
     </section>
   );
 }

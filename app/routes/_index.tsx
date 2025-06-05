@@ -4,6 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 import { shopifyFetch } from "~/utils/shopify";
 
 import Hero from "../components/hero";
+import ProductCard from "~/components/product-card";
 
 export const meta: MetaFunction = () => {
   return [
@@ -66,7 +67,7 @@ export const loader = async () => {
   return json({ products: data.collectionByHandle.products.edges });
 };
 
-type Product = {
+export type Product = {
   id: string;
   title: string;
   handle: string;
@@ -101,7 +102,7 @@ type Product = {
   };
 };
 
-type LoaderData = {
+export type LoaderData = {
   products: {
     node: Product;
   }[];
@@ -121,49 +122,12 @@ export default function Index() {
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {products.map(({ node }) => {
-            const image = node.images.edges[0]?.node;
-            const minPrice = node.priceRange.minVariantPrice;
-            const compareAt = node.compareAtPriceRange.minVariantPrice;
-
-            const isOnSale =
-              compareAt?.amount &&
-              parseFloat(compareAt.amount) > parseFloat(minPrice.amount);
-
             return (
               <li
                 key={node.id}
                 className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow"
               >
-                {image && (
-                  <img
-                    src={image.url}
-                    alt={image.altText || node.title}
-                    className="w-full h-64 object-cover"
-                  />
-                )}
-                <div className="p-4 space-y-2">
-                  <h3 className="text-lg font-semibold">{node.title}</h3>
-
-                  <div
-                    className="text-sm text-gray-700 line-clamp-3"
-                    dangerouslySetInnerHTML={{ __html: node.descriptionHtml }}
-                  />
-
-                  <div className="text-base font-medium">
-                    {isOnSale ? (
-                      <span>
-                        <span className="text-red-600 mr-2">
-                          €{parseFloat(minPrice.amount).toFixed(2)}
-                        </span>
-                        <span className="line-through text-gray-400">
-                          €{parseFloat(compareAt.amount).toFixed(2)}
-                        </span>
-                      </span>
-                    ) : (
-                      <span>€{parseFloat(minPrice.amount).toFixed(2)}</span>
-                    )}
-                  </div>
-                </div>
+                <ProductCard product={node} />
               </li>
             );
           })}
