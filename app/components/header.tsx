@@ -27,6 +27,9 @@ export default function Header() {
           <NavLink to="/contacts" className={navLinkClass}>
             Contacts
           </NavLink>
+          <NavLink to="/cart" className={navLinkClass}>
+            Cart
+          </NavLink>
         </nav>
       </div>
     </header>

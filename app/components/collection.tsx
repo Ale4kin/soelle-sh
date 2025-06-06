@@ -24,7 +24,7 @@ export default function Collection({
 
       <section className="max-w-7xl mx-auto px-6 py-16">
         <h2 className="text-3xl font-semibold text-center mb-8">
-          New Arrivals
+          {title.toLocaleUpperCase().replace(/-/g, " ")}
         </h2>
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
