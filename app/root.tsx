@@ -1,14 +1,27 @@
 import {
+  isRouteErrorResponse,
+  json,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
+  useMatches,
+  useRouteError,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 
 import "./tailwind.css";
 import Header from "./components/header";
+import { shopifyFetch } from "./utils/shopify";
+import { cookie as cartCookie } from "./utils/cookie";
+import { GET_CART_QUANTITY_QUERY } from "./utils/queries";
+import ErrorPage from "./components/error";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,7 +36,87 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Soelle – Your Favorite Shop" },
+    {
+      name: "description",
+      content:
+        "Discover unique collections at Soelle. Stylish, elegant, and made for you.",
+    },
+    { property: "og:title", content: "Soelle – Your Favorite Shop" },
+    {
+      property: "og:description",
+      content: "Discover unique collections at Soelle.",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:image", content: "/images/social-preview.jpg" },
+    { property: "og:url", content: "https://soelle-shop.com" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: "Soelle – Your Favorite Shop" },
+    {
+      name: "twitter:description",
+      content: "Explore our new collection online.",
+    },
+    { name: "twitter:image", content: "/images/social-preview.jpg" },
+  ];
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  try {
+    const cookieHeader = request.headers.get("Cookie");
+    const cartSession = await cartCookie.parse(cookieHeader || "");
+
+    let cartQuantity = 0;
+
+    if (cartSession?.cartId) {
+      const data = await shopifyFetch({
+        query: GET_CART_QUANTITY_QUERY,
+        variables: {
+          id: cartSession.cartId,
+        },
+      });
+
+      cartQuantity = data?.cart?.totalQuantity || 0;
+    }
+
+    return json({ cartQuantity });
+  } catch (error) {
+    console.error("Loader error:", error);
+    throw new Response("Internal Server Error", { status: 500 });
+  }
+};
+
+type HandleWithStructuredData = {
+  structuredData?: Record<string, unknown>;
+};
+
+export function Layout(props: { children?: React.ReactNode }) {
+  let cartQuantity = 0;
+
+  try {
+    const data = useLoaderData<typeof loader>();
+    cartQuantity = data?.cartQuantity ?? 0;
+  } catch (e) {
+    console.error("Loader data error:", e);
+  }
+
+  const matches = useMatches();
+  const structuredData = matches.find(
+    (m) =>
+      m.handle && typeof m.handle === "object" && "structuredData" in m.handle
+  )?.handle
+    ? (
+        matches.find(
+          (m) =>
+            m.handle &&
+            typeof m.handle === "object" &&
+            "structuredData" in m.handle
+        )!.handle as HandleWithStructuredData
+      ).structuredData
+    : undefined;
+
+  console.log(2000, matches);
   return (
     <html lang="en">
       <head>
@@ -32,14 +125,42 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <Meta />
         <Links />
+        {structuredData && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(structuredData),
+            }}
+          />
+        )}
       </head>
       <body>
-        <Header />
-        {children}
+        <Header cartQuantity={cartQuantity} />
+        {props.children}
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <ErrorPage
+        title={`${error.status} — ${error.statusText}`}
+        message="Sorry, this page doesn’t exist."
+      />
+    );
+  }
+
+  return (
+    <ErrorPage
+      title="Something went wrong"
+      message={error instanceof Error ? error.message : "Unknown error"}
+    />
   );
 }
 

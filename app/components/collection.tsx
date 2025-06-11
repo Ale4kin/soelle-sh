@@ -30,12 +30,12 @@ export default function Collection({
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {products.map(({ node }) => {
             return (
-              <li
+              <div
                 key={node.id}
                 className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow"
               >
                 <ProductCard product={node} />
-              </li>
+              </div>
             );
           })}
         </ul>

@@ -21,7 +21,7 @@ export default function Hero() {
         Discover new arrivals that fit your lifestyle.
       </p>
       <Link
-        to="/collections/new-arrivals"
+        to="/collection/new-arrivals"
         style={{
           background: "white",
           color: "black",

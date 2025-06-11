@@ -4,14 +4,25 @@ import type { MetaFunction } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import Product from "../components/product";
 
-export const meta: MetaFunction = ({ params }) => {
-  const handle = params.handle || "Collection";
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data?.product) {
+    return [{ title: "Product not found – Soelle" }];
+  }
+
+  const { product } = data;
+
   return [
-    { title: `${handle} | Soelle Shop` },
+    { title: `${product.title} | Soelle` },
     {
       name: "description",
-      content: `Browse products from the ${handle} collection at Soelle Shop.`,
+      content: product.description || "Shop this exclusive product on Soelle.",
     },
+    { property: "og:title", content: `${product.title} | Soelle` },
+    {
+      property: "og:description",
+      content: product.description || "",
+    },
+    { property: "og:image", content: product?.images?.edges?.[0]?.node?.url },
   ];
 };
 
@@ -21,9 +32,22 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   const query = `
   {
       productByHandle(handle: "${handle}") {
+        id
         title
         handle
         descriptionHtml
+        variants(first:2) {
+        edges{
+        node {
+          id
+          title
+          price {
+            amount
+            currencyCode
+          }
+            }
+        }
+        }
         priceRange {
           maxVariantPrice {
             amount

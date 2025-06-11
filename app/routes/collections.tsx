@@ -8,7 +8,7 @@ export const meta: MetaFunction = () => {
     { title: "Collections | Soelle Shop" },
     {
       name: "description",
-      content: "Browse all product collections available in the Soelle Shop.",
+      content: "Browse curated collections of modern fashion and lifestyle.",
     },
   ];
 };

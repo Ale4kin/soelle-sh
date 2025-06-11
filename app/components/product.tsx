@@ -1,4 +1,10 @@
-import { Link } from "@remix-run/react";
+import { Form, Link, useFetcher } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import Modal from "./modal";
+
+type FetcherData = {
+  success?: boolean;
+};
 
 export default function ProductPage({
   product,
@@ -15,6 +21,7 @@ export default function ProductPage({
     product.compareAtPriceRange.minVariantPrice.amount
   );
   const isOnSale = compareAt > minPrice;
+  const variantId = product.variants.edges[0]?.node.id;
 
   const groupedAttributes = Object.entries(
     metaobjects.reduce((acc, obj) => {
@@ -31,6 +38,14 @@ export default function ProductPage({
       return acc;
     }, {} as Record<string, string[]>)
   );
+
+  const fetcher = useFetcher<FetcherData>();
+  const [showModal, setShowModal] = useState(false);
+  useEffect(() => {
+    if (fetcher.data?.success) {
+      setShowModal(true);
+    }
+  }, [fetcher.data]);
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
@@ -66,15 +81,24 @@ export default function ProductPage({
             )}
           </div>
 
-          <form method="post" action="/cart">
-            <input type="hidden" name="productHandle" value={product.handle} />
+          <fetcher.Form method="post" action="/cart">
+            <input type="hidden" name="productId" value={variantId} />
+            <input type="hidden" name="quantity" value="1" />
             <button
               type="submit"
               className="inline-block px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
             >
               Add to Cart
             </button>
-          </form>
+          </fetcher.Form>
+
+          {showModal && (
+            <Modal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              message="Product added to cart!"
+            />
+          )}
 
           {/* Product attributes (placeholder) */}
           {groupedAttributes.length > 0 && (

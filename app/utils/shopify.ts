@@ -1,4 +1,4 @@
-export async function shopifyFetch({
+export async function shopifyFetch<T>({
   query,
   variables = {},
 }: {

@@ -6,8 +6,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const minPrice = product.priceRange.minVariantPrice;
   const compareAt = product.compareAtPriceRange.minVariantPrice;
 
-  console.log(200, product);
-
   const isOnSale =
     compareAt?.amount &&
     parseFloat(compareAt.amount) > parseFloat(minPrice.amount);
