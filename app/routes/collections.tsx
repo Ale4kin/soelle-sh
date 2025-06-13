@@ -3,14 +3,14 @@ import { shopifyFetch } from "~/utils/shopify";
 import type { MetaFunction } from "@remix-run/node";
 import Cover from "../components/cover";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Collections | Soelle Shop" },
-    {
-      name: "description",
-      content: "Browse curated collections of modern fashion and lifestyle.",
-    },
-  ];
+type CollectionNode = {
+  id: string;
+  title: string;
+  handle: string;
+};
+
+type LoaderData = {
+  collections: { node: CollectionNode }[];
 };
 
 export const loader = async () => {
@@ -35,14 +35,51 @@ export const loader = async () => {
 
   return json({ collections: data.collections.edges });
 };
-type CollectionNode = {
-  id: string;
-  title: string;
-  handle: string;
-};
 
-type LoaderData = {
-  collections: { node: CollectionNode }[];
+export const meta: MetaFunction = ({ data }) => {
+  const collections = (data as LoaderData).collections;
+  const siteUrl = "https://soelle-shop.com";
+
+  // Генерируем JSON-LD в формате ItemList
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: collections.map(({ node }, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: node.title,
+      url: `${siteUrl}/collections/${node.handle}`,
+    })),
+  };
+
+  return [
+    { title: "Collections | Soelle Shop" },
+    {
+      name: "description",
+      content: "Browse curated collections of modern fashion and lifestyle.",
+    },
+    // Open Graph
+    { property: "og:title", content: "Collections | Soelle Shop" },
+    {
+      property: "og:description",
+      content: "Browse curated collections of modern fashion and lifestyle.",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: `${siteUrl}/collections` },
+    { property: "og:image", content: "/images/collections-og.jpg" },
+    // Twitter Card
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: "Collections | Soelle Shop" },
+    {
+      name: "twitter:description",
+      content: "Browse curated collections of modern fashion and lifestyle.",
+    },
+    { name: "twitter:image", content: "/images/collections-og.jpg" },
+
+    {
+      "script:ld+json": structuredData,
+    },
+  ];
 };
 
 export default function Collections() {

@@ -1,13 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import Cover from "./cover";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Contact | Soelle Shop" },
-    { name: "description", content: "Get in touch with Soelle Shop" },
-  ];
-};
-
 export default function Contact() {
   return (
     <main className="px-4 py-8">

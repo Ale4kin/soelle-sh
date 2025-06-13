@@ -4,28 +4,6 @@ import type { MetaFunction } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import Product from "../components/product";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  if (!data?.product) {
-    return [{ title: "Product not found – Soelle" }];
-  }
-
-  const { product } = data;
-
-  return [
-    { title: `${product.title} | Soelle` },
-    {
-      name: "description",
-      content: product.description || "Shop this exclusive product on Soelle.",
-    },
-    { property: "og:title", content: `${product.title} | Soelle` },
-    {
-      property: "og:description",
-      content: product.description || "",
-    },
-    { property: "og:image", content: product?.images?.edges?.[0]?.node?.url },
-  ];
-};
-
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const handle = params.handle;
   if (!handle) throw new Response("No handle provided", { status: 400 });
@@ -170,6 +148,72 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     relatedProducts: data.collectionByHandle?.products?.edges || [],
     metaobjects: metaobjectsData,
   });
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data?.product) {
+    return [{ title: "Product not found – Soelle" }];
+  }
+  const { product } = data;
+  const siteUrl = "https://soelle-shop.com";
+  const productUrl = `${siteUrl}/products/${product.handle}`;
+  const imageUrl = product.images.edges[0]?.node.url;
+  const price = parseFloat(product.priceRange.minVariantPrice.amount).toFixed(
+    2
+  );
+  const currency = product.priceRange.minVariantPrice.currencyCode;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    image: [imageUrl],
+    description: product.description,
+    sku: product.id,
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      price: price,
+      priceCurrency: currency,
+      availability:
+        product.totalInventory > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+  };
+
+  const tags = [
+    { title: `${product.title} | Soelle` },
+    {
+      name: "description",
+      content:
+        product.description || "Shop this exclusive product on Soelle Shop.",
+    },
+
+    { property: "og:title", content: `${product.title} | Soelle` },
+    {
+      property: "og:description",
+      content: product.description || "",
+    },
+    { property: "og:image", content: imageUrl },
+    { property: "og:url", content: productUrl },
+    { property: "og:type", content: "product" },
+
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: `${product.title} | Soelle` },
+    {
+      name: "twitter:description",
+      content: product.description || "",
+    },
+    { name: "twitter:image", content: imageUrl },
+  ] as any[];
+
+  tags.push({
+    "script:ld+json": structuredData,
+  } as any);
+
+  return tags;
 };
 
 export default function ProductPage() {

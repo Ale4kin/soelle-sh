@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/node"; // app/routes/faq.tsx
+import type { MetaFunction } from "@remix-run/node";
 import { useState } from "react";
 
 import Cover from "./cover";
@@ -8,7 +8,7 @@ type FAQItem = {
   answer: string;
 };
 
-const faqData: FAQItem[] = [
+export const faqData: FAQItem[] = [
   {
     question: "What sizes do you offer?",
     answer:
@@ -30,31 +30,6 @@ const faqData: FAQItem[] = [
       "You can reach us anytime at support@soelle.com. We typically reply within 24 hours.",
   },
 ];
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "FAQ | Soelle Shop" },
-    {
-      name: "description",
-      content:
-        "Find answers to frequently asked questions about Soelle Shop, orders, shipping, and more.",
-    },
-  ];
-};
-export const handle = {
-  structuredData: {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqData.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  },
-};
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);

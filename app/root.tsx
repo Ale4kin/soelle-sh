@@ -7,7 +7,6 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-  useMatches,
   useRouteError,
 } from "@remix-run/react";
 import type {
@@ -18,6 +17,7 @@ import type {
 
 import "./tailwind.css";
 import Header from "./components/header";
+import Footer from "./components/footer";
 import { shopifyFetch } from "./utils/shopify";
 import { cookie as cartCookie } from "./utils/cookie";
 import { GET_CART_QUANTITY_QUERY } from "./utils/queries";
@@ -101,22 +101,6 @@ export function Layout(props: { children?: React.ReactNode }) {
     console.error("Loader data error:", e);
   }
 
-  const matches = useMatches();
-  const structuredData = matches.find(
-    (m) =>
-      m.handle && typeof m.handle === "object" && "structuredData" in m.handle
-  )?.handle
-    ? (
-        matches.find(
-          (m) =>
-            m.handle &&
-            typeof m.handle === "object" &&
-            "structuredData" in m.handle
-        )!.handle as HandleWithStructuredData
-      ).structuredData
-    : undefined;
-
-  console.log(2000, matches);
   return (
     <html lang="en">
       <head>
@@ -125,18 +109,11 @@ export function Layout(props: { children?: React.ReactNode }) {
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <Meta />
         <Links />
-        {structuredData && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(structuredData),
-            }}
-          />
-        )}
       </head>
       <body>
         <Header cartQuantity={cartQuantity} />
         {props.children}
+        <Footer />
         <ScrollRestoration />
         <Scripts />
       </body>
