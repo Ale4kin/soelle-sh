@@ -35,7 +35,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     {
         collectionByHandle(handle: "${handle}") {
           id,
-          products(first: 6) {
+          products(first: 12) {
            edges {
              node {
                id
