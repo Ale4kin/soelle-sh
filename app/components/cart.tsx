@@ -35,7 +35,7 @@ export default function Cart({
       <Cover
         title="Your Shopping Cart"
         subtitle="Review your selected items below before checking out. Need help? We're here for you!"
-        backgroundImage="/images/cart-bg.jpg"
+        backgroundImage="/images/hero-cart.png"
       />
 
       <section className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">

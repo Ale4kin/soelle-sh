@@ -127,7 +127,7 @@ export default function ProductPage({
             const img = node.images.edges[0]?.node;
             return (
               <Link
-                to={`/products/${node.handle}`}
+                to={`/product/${node.handle}`}
                 key={node.id}
                 className="block border rounded overflow-hidden hover:shadow-md transition"
               >

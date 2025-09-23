@@ -9,21 +9,22 @@ type CollectionProps = {
   }[];
   title: string;
   subtitle?: string;
-  backgroundImage?: string;
+  backgroundImage?: { url: string; altText: string | null };
 };
 
 export default function Collection({
   products,
   title,
   subtitle,
-  backgroundImage = "/images/collections-bg.jpg",
+  //   backgroundImage = "/images/collections-bg.jpg",
+  backgroundImage,
 }: CollectionProps) {
   return (
     <main className="px-4 py-8">
-      <Cover backgroundImage={backgroundImage} />
+      <Cover backgroundImage={backgroundImage?.url} />
 
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-semibold text-center mb-8">
+        <h2 className="text-6xl font-semibold text-center mb-8">
           {title.toLocaleUpperCase().replace(/-/g, " ")}
         </h2>
 

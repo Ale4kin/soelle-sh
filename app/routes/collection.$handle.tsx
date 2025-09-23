@@ -35,6 +35,9 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     {
         collectionByHandle(handle: "${handle}") {
           id,
+          image {
+            url
+            altText},
           products(first: 12) {
            edges {
              node {
@@ -85,6 +88,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({
     products: data.collectionByHandle.products.edges,
     title: handle,
+    image: data.collectionByHandle.image,
   });
 };
 
@@ -147,9 +151,13 @@ export const meta: MetaFunction = ({ data, params }) => {
 };
 
 export default function CollectionPage() {
-  const { products, title } = useLoaderData<
-    ProductLoaderData & { title: string }
+  const { products, title, image } = useLoaderData<
+    ProductLoaderData & {
+      title: string;
+      image?: { url: string; altText: string | null };
+    }
   >();
-
-  return <Collection products={products} title={title} />;
+  return (
+    <Collection products={products} title={title} backgroundImage={image} />
+  );
 }

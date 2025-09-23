@@ -11,7 +11,7 @@ export default function ProductCard({ product }: { product: Product }) {
     parseFloat(compareAt.amount) > parseFloat(minPrice.amount);
 
   return (
-    <li className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow bg-white dark:bg-gray-800">
+    <li className="h-full border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow bg-white dark:bg-gray-800">
       {image && (
         <img
           src={image.url}
