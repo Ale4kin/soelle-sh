@@ -95,6 +95,17 @@ export default function Collections() {
 
       <section className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          <Link to="/collection/all" prefetch="intent" className="group h-full">
+            <div className="h-full border rounded-lg bg-white dark:bg-gray-800 p-6 shadow hover:shadow-md transition-shadow flex flex-col justify-between group-hover:border-blue-500">
+              <div>
+                <h2 className="text-lg font-semibold mb-2">All Products</h2>
+              </div>
+              <span className="mt-4 inline-flex items-center text-blue-600 dark:text-blue-400 group-hover:underline">
+                View all products
+              </span>
+            </div>
+          </Link>
+
           {(collections || []).map(({ node }) => (
             <div
               key={node.id}
